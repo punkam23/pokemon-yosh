@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 @Service
 public class PokemonService {
@@ -23,7 +26,11 @@ public class PokemonService {
     public String iniciarPokemon(PlayerInformation playerInformation) {
         try {
             // Escribir el JSON en el archivo
-            objectMapper.writeValue(new File(playerInformationFilePath), playerInformation);
+//            objectMapper.writeValue(new File(playerInformationFilePath), playerInformation);
+
+            Path outputFilePath = Path.of(playerInformationFilePath);
+            String objectJson = objectMapper.writeValueAsString(playerInformation);
+            Files.write(outputFilePath, objectJson.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 
             return "El jugador ha sido registrado para la batalla";
         } catch (IOException e) {
