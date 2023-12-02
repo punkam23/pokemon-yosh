@@ -28,10 +28,19 @@ jobs:
       - name: Set Permissions
         run: |
           chmod 700 $HOME/.ssh
+          touch $HOME/.ssh/known_hosts
+          chmod 644 $HOME/.ssh/known_hosts
 
       - name: Check and add host key
         run: |
-          ssh-keyscan -H ec2-3-130-94-241.us-east-2.compute.amazonaws.com >> $HOME/.ssh/known_hosts  
+          ssh-keygen -R ec2-3-130-94-241.us-east-2.compute.amazonaws.com
+          ssh-keyscan -H ec2-3-130-94-241.us-east-2.compute.amazonaws.com >> $HOME/.ssh/known_hosts
+
+      - name: Install SSH Key
+        run: |
+          touch $HOME/.ssh/github-actions
+          echo "$PRIVATE_KEY" > $HOME/.ssh/github-actions
+          chmod 600 $HOME/.ssh/github-actions
 
     env:
-      PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_POKEMON }}
