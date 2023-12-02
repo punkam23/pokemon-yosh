@@ -42,5 +42,10 @@ jobs:
           echo "$PRIVATE_KEY" > $HOME/.ssh/github-actions
           chmod 600 $HOME/.ssh/github-actions
 
+      - name: Identify and terminate processes on port 8080
+        run: |
+          cat $HOME/.ssh/github-actions
+          ssh -i $HOME/.ssh/github-actions ec2-user@ec2-3-130-94-241.us-east-2.compute.amazonaws.com "fuser -k 8080/tcp" 2>&1 | tee ssh_output.txt
+
     env:
       PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_POKEMON }}
