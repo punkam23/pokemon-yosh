@@ -26,7 +26,6 @@ public class PokemonService {
     public String iniciarPokemon(PlayerInformation playerInformation) {
         try {
             // Escribir el JSON en el archivo
-//            objectMapper.writeValue(new File(playerInformationFilePath), playerInformation);
 
             Path outputFilePath = Path.of(playerInformationFilePath);
             String objectJson = objectMapper.writeValueAsString(playerInformation);

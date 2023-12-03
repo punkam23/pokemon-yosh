@@ -3,7 +3,6 @@ package com.ucenfotec.pokemonyosh.controller;
 import com.ucenfotec.pokemonyosh.model.AttackInformation;
 import com.ucenfotec.pokemonyosh.model.BatallaResponse;
 import com.ucenfotec.pokemonyosh.model.PlayerInformation;
-import com.ucenfotec.pokemonyosh.model.Pokemon;
 import com.ucenfotec.pokemonyosh.service.PokemonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
