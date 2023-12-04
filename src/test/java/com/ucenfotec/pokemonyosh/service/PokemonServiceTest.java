@@ -5,10 +5,18 @@ import com.ucenfotec.pokemonyosh.model.PlayerInformation;
 import com.ucenfotec.pokemonyosh.model.Pokemon;
 import com.ucenfotec.pokemonyosh.model.PokemonTypeEnum;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 
 @SpringBootTest
@@ -18,7 +26,7 @@ public class PokemonServiceTest {
     PokemonService pokemonService;
 
     @Test
-    void unirseBatallaTest() {
+    void unirseBatallaTest() throws IOException {
         //given
         Attack attack1 = new Attack();
         attack1.setPower(100);
@@ -42,7 +50,6 @@ public class PokemonServiceTest {
                 "playerName",
                 pokemon
         );
-
 
         //when
         String response = this.pokemonService.iniciarPokemon(playerInformation);

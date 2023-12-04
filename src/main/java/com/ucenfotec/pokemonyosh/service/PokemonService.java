@@ -6,6 +6,7 @@ import com.ucenfotec.pokemonyosh.model.BatallaResponse;
 import com.ucenfotec.pokemonyosh.model.PlayerInformation;
 import com.ucenfotec.pokemonyosh.model.Pokemon;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -21,7 +22,9 @@ public class PokemonService {
     public GimnasioService gimnasioService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final String playerInformationFilePath = "../playerInformation.json";
+
+    @Value("${app.player-information.file}")
+    private String playerInformationFilePath;
 
     public String iniciarPokemon(PlayerInformation playerInformation) {
         try {
