@@ -64,5 +64,20 @@ jobs:
         run: |
           ssh -i $HOME/.ssh/github-actions ec2-user@ec2-3-130-94-241.us-east-2.compute.amazonaws.com "nohup sudo java -jar /home/ec2-user/pokemonDeploy/libs/pokemonYosh-0.0.1-SNAPSHOT.jar > output.log 2>&1 &"
 
+      - name: Check Code Coverage
+        run: |
+          COVERAGE_THRESHOLD=60
+          HTML_REPORT_FILE=build/reports/jacoco/test/html/index.html
+          ACTUAL_COVERAGE=$(grep -oP '(?<=<td class="ctr2">)\d+(?=%</td>)' $HTML_REPORT_FILE)
+          
+          echo "Actual Coverage: $ACTUAL_COVERAGE%"
+          
+          if [ "$ACTUAL_COVERAGE" -lt "$COVERAGE_THRESHOLD" ]; then
+            echo "Code coverage is below the required threshold. Failing the build."
+            exit 1
+          else
+            echo "Code coverage is acceptable."
+          fi
+
     env:
       PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_POKEMON }}
