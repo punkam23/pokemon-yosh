@@ -66,23 +66,29 @@ jobs:
 
       - name: Check Code Coverage
         run: |
-          COVERAGE_THRESHOLD=60
-          HTML_REPORT_FILE=build/reports/jacoco/test/html/index.html
-          ACTUAL_COVERAGE=$(grep -oP '(?<=<td class="ctr2">)\d+(?=%</td>)' $HTML_REPORT_FILE | sed 's/[^0-9]//g')
-          
-          echo "1Actual Coverage: $ACTUAL_COVERAGE end"
-          
-          echo "1end of act"
-          
-          ACTUAL_COVERAGE=$(printf "%.0f" "$ACTUAL_COVERAGE")
-          
-          echo "2Actual Coverage: $ACTUAL_COVERAGE%"
-          
-          if [[ ! "ACTUAL_COVERAGE" =~ ^[0-9]+$ ]]; then
-            echo "Error: ACTUAL_COVERAGE is not a valid integer."
+#          COVERAGE_THRESHOLD=60
+#          HTML_REPORT_FILE=build/reports/jacoco/test/html/index.html
+#          ACTUAL_COVERAGE=$(grep -oP '(?<=<td class="ctr2">)\d+(?=%</td>)' $HTML_REPORT_FILE | tr -d '\n')
+#
+#          echo "1Actual Coverage: $ACTUAL_COVERAGE end"
+#
+#          echo "1end of act"
+#
+#          ACTUAL_COVERAGE=$(printf "%.0f" "$ACTUAL_COVERAGE")
+#
+#          echo "2Actual Coverage: $ACTUAL_COVERAGE%"
+#
+#          if [[ ! "ACTUAL_COVERAGE" =~ ^[0-9]+$ ]]; then
+#            echo "Error: ACTUAL_COVERAGE is not a valid integer."
+#            exit 1
+#          fi
+          coverage=$(grep -oP 'total=".+?"' build/reports/jacoco/test/jacocoTestReport.xml | grep -oP '\d+(?=%)')
+          if [ "$coverage" -lt 60 ]; then
+            echo "Code coverage is less than 60%: $coverage%"
             exit 1
+          else
+            echo "Code coverage is acceptable: $coverage%"
           fi
-
 #          if ((ACTUAL_COVERAGE < COVERAGE_THRESHOLD)); then
 #            echo "Code coverage is below the required threshold. Failing the build."
 #            exit 1
