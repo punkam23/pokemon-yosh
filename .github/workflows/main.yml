@@ -70,7 +70,9 @@ jobs:
           HTML_REPORT_FILE=build/reports/jacoco/test/html/index.html
           ACTUAL_COVERAGE=$(grep -oP '(?<=<td class="ctr2">)\d+(?=%</td>)' $HTML_REPORT_FILE)
           
-          echo "1Actual Coverage: $ACTUAL_COVERAGE%"
+          echo "1Actual Coverage: $ACTUAL_COVERAGE end"
+          
+          echo "1end of act"
           
           ACTUAL_COVERAGE=$(printf "%.0f" "$ACTUAL_COVERAGE")
           
