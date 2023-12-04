@@ -66,12 +66,13 @@ jobs:
 
       - name: Check Code Coverage
         run: |
-          ACTUAL_COVERAGE=$(grep -oP 'total=".+?"' build/reports/jacoco/test/jacocoTestReport.xml | grep -oP '\d+(?=%)')
-          if [ "$coverage" -lt 60 ]; then
-            echo "Code coverage is less than 60%: $coverage%"
+          ACTUAL_COVERAGE=$(grep -oP 'span class="ctr2[^>]+>\K\d+' build/reports/jacoco/test/html/index.html)
+          echo "Code coverage is: $ACTUAL_COVERAGE%"
+          if [ "$ACTUAL_COVERAGE" -lt 60 ]; then
+            echo "Code coverage is less than 60%. Failing the workflow."
             exit 1
           else
-            echo "Code coverage is acceptable: $coverage%"
+            echo "Code coverage is acceptable."
           fi
 
 #          COVERAGE_THRESHOLD=60
