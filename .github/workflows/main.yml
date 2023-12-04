@@ -72,7 +72,7 @@ jobs:
           
           echo "Actual Coverage: $ACTUAL_COVERAGE%"
           
-          if [ "$ACTUAL_COVERAGE" -lt "$COVERAGE_THRESHOLD" ]; then
+          if [ $ACTUAL_COVERAGE -lt $COVERAGE_THRESHOLD ]; then
             echo "Code coverage is below the required threshold. Failing the build."
             exit 1
           else
