@@ -72,7 +72,7 @@ jobs:
           
           echo "Actual Coverage: $ACTUAL_COVERAGE"
           
-          if awk -v actual="$ACTUAL_COVERAGE" -v threshold="$COVERAGE_THRESHOLD" 'BEGIN { exit (actual < threshold) }'; then
+          if [ "$(echo "$ACTUAL_COVERAGE < $COVERAGE_THRESHOLD" | bc -l)" -eq 1 ]; then
             echo "Code coverage is below the required threshold. Failing the build."
             exit 1
           else
