@@ -66,6 +66,7 @@ jobs:
 
       - name: Check Code Coverage
         run: |
+          HTML_REPORT_FILE=build/reports/jacoco/test/html/index.html
           ACTUAL_COVERAGE=$(grep -oP 'span class="ctr2[^>]+>\K\d+' $HTML_REPORT_FILE)
           echo "Code coverage is: $ACTUAL_COVERAGE%"
 #          if [ "$ACTUAL_COVERAGE" -lt 20 ]; then
