@@ -68,7 +68,7 @@ jobs:
         run: |
           HTML_REPORT_FILE=build/reports/jacoco/test/html/index.html
           ACTUAL_COVERAGE=$(grep -oP '(?<=<td class="ctr2">)\d+(?=%</td>)' $HTML_REPORT_FILE | tr -d '\n')
-          echo "Code coverage is: $ACTUAL_COVERAGE%"
+          echo "Code coverage is: ($ACTUAL_COVERAGE/100)%"
 #          if [ "$ACTUAL_COVERAGE" -lt 20 ]; then
 #            echo "Code coverage is less than 60%. Failing the workflow."
 #            exit 1
