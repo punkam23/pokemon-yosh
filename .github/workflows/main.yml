@@ -70,9 +70,11 @@ jobs:
           HTML_REPORT_FILE=build/reports/jacoco/test/html/index.html
           ACTUAL_COVERAGE=$(grep -oP '(?<=<td class="ctr2">)\d+(?=%</td>)' $HTML_REPORT_FILE)
           
-          echo "Actual Coverage: $ACTUAL_COVERAGE"
+          ACTUAL_COVERAGE=$(printf "%.0f" "$ACTUAL_COVERAGE")
           
-          if [[ ! "$COVERAGE_THRESHOLD" =~ ^[0-9]+$ ]]; then
+          echo "Actual Coverage: $ACTUAL_COVERAGE%"
+          
+          if [[ ! "ACTUAL_COVERAGE" =~ ^[0-9]+$ ]]; then
             echo "Error: ACTUAL_COVERAGE is not a valid integer."
             exit 1
           fi
