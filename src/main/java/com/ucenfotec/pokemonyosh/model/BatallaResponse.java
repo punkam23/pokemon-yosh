@@ -10,9 +10,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BatallaResponse {
-
     private Long id;
-    private String estadoBatalla;
+    private String state;
     private List<PlayerInformation> playerInformationList;
 
 }

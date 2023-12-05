@@ -1,10 +1,12 @@
 package com.ucenfotec.pokemonyosh.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ucenfotec.pokemonyosh.DTO.ResponseDTO;
 import com.ucenfotec.pokemonyosh.model.AttackInformation;
 import com.ucenfotec.pokemonyosh.model.BatallaResponse;
 import com.ucenfotec.pokemonyosh.model.PlayerInformation;
 import com.ucenfotec.pokemonyosh.model.Pokemon;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,45 +28,53 @@ public class PokemonService {
     @Value("${app.player-information.file}")
     private String playerInformationFilePath;
 
-    public String iniciarPokemon(PlayerInformation playerInformation) {
+    public ResponseDTO iniciarPokemon(PlayerInformation playerInformation) {
+        ResponseDTO response = new ResponseDTO();
         try {
-            // Escribir el JSON en el archivo
-
-            Path outputFilePath = Path.of(playerInformationFilePath);
-            String objectJson = objectMapper.writeValueAsString(playerInformation);
-            Files.write(outputFilePath, objectJson.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-
-            return "El jugador ha sido registrado para la batalla";
+            if(!this.gimnasioService.obtenerBatallaInformation().isSuccess()){
+                Path outputFilePath = Path.of(playerInformationFilePath);
+                String objectJson = objectMapper.writeValueAsString(playerInformation);
+                Files.write(outputFilePath, objectJson.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                response.setSuccess(true);
+                response.setMessage("The player has been added or modified.");
+            } else {
+                response.setSuccess(false);
+                response.setMessage("The Battle is in progress.");
+            }
+            return response;
         } catch (IOException e) {
             e.printStackTrace();
-            return "Hubo un error al intentar registrar el jugador";
+            response.setSuccess(false);
+            response.setMessage("Error trying to updating the player information");
+        }
+        return response;
+    }
+
+    public ResponseDTO unirseBatalla() {
+        try {
+            PlayerInformation pokemonFromFile = objectMapper.readValue(new File(playerInformationFilePath), PlayerInformation.class);
+            return this.gimnasioService.unirseAGimnasio(pokemonFromFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         }
     }
 
-    public String unirseBatalla() {
+    public ResponseDTO atacarPokemon(AttackInformation attackInformation) {
+        PlayerInformation playerInformation;
         try {
-            PlayerInformation pokemonFromFile = objectMapper.readValue(new File(playerInformationFilePath), PlayerInformation.class);
-            //llamar al gimnasio para unirse a la batalla.
-            return "Se ha unido exitosamente a la batalla";
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "Hubo un error al unirse a la batalla";
-        }
-    }
-
-    public String atacarPokemon(AttackInformation attackInformation) {
-        int attackPower = 0;
-        try {
-            PlayerInformation pokemonFromFile = objectMapper.readValue(new File(playerInformationFilePath), PlayerInformation.class);
-            attackPower = pokemonFromFile.getPokemon().getAttacks().get(attackInformation.getAttackId()).getPower();
+            playerInformation = objectMapper.readValue(new File(playerInformationFilePath), PlayerInformation.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        return this.gimnasioService.atacarPokemon(attackInformation.getPlayerName(), attackPower);
+        return this.gimnasioService.atacarPokemon(playerInformation.getPlayerName(), attackInformation.getPlayerName(), attackInformation.getAttackId());
     }
 
-    public BatallaResponse obtenerInformacionBatalla() {
+    public ResponseDTO obtenerInformacionBatalla() {
         return this.gimnasioService.obtenerBatallaInformation();
+    }
+
+    public ResponseDTO iniciarBatalla() {
+        return this.gimnasioService.iniciarBatalla();
     }
 }

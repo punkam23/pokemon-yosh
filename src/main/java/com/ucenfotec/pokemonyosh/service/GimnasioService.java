@@ -1,7 +1,10 @@
 package com.ucenfotec.pokemonyosh.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ucenfotec.pokemonyosh.DTO.AttackInformationDTO;
+import com.ucenfotec.pokemonyosh.DTO.ResponseDTO;
 import com.ucenfotec.pokemonyosh.model.*;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
@@ -11,7 +14,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class GimnasioService {
@@ -25,44 +27,108 @@ public class GimnasioService {
     public GimnasioService(){
         this.httpClient = HttpClient.newBuilder().build();
     }
-    private Pokemon pokemonPlayer1 = new Pokemon("bulbasor", PokemonTypeEnum.NORMAL,1000, List.of());
-    private PlayerInformation player1 = new PlayerInformation("player1", pokemonPlayer1);
-    private Pokemon pokemonPlayer2 = new Pokemon("bulbasor2", PokemonTypeEnum.NORMAL,1000, List.of());
-    private PlayerInformation player2 = new PlayerInformation("player2", pokemonPlayer1);
-    private Pokemon pokemonPlayer3 = new Pokemon("bulbasor3", PokemonTypeEnum.NORMAL,1000, List.of());
-    private PlayerInformation player3 = new PlayerInformation("player3", pokemonPlayer1);
+    private Pokemon pokemonPlayer1 = new Pokemon("bulbasor", PokemonTypeEnum.normal,1000, List.of());
+    private PlayerInformation player1 = new PlayerInformation("player1", PlayerStateEnum.EN_BATALLA.name(), pokemonPlayer1);
+    private Pokemon pokemonPlayer2 = new Pokemon("bulbasor2", PokemonTypeEnum.normal,1000, List.of());
+    private PlayerInformation player2 = new PlayerInformation("player2", PlayerStateEnum.EN_BATALLA.name(), pokemonPlayer1);
+    private Pokemon pokemonPlayer3 = new Pokemon("bulbasor3", PokemonTypeEnum.normal,1000, List.of());
+    private PlayerInformation player3 = new PlayerInformation("player3", PlayerStateEnum.ATACANDO.name(), pokemonPlayer1);
     private BatallaResponse batallaResponse = new BatallaResponse(1L, "EN_BATALLA",
             List.of(player1, player2, player3));
 
-    public String atacarPokemon(String playerId, int attackPower){
-        boolean foundPlayer = this.batallaResponse.getPlayerInformationList().stream().anyMatch(playerInformation -> {
-            if(playerInformation.getPlayerName().equals(playerId)) {
-                if (playerInformation.getPokemon().getVida() <= 0) {
-                    Integer vida = playerInformation.getPokemon().getVida();
-                    Integer nuevaVida = vida - attackPower;
-                    playerInformation.getPokemon().setVida(nuevaVida);
-                    return true;
-                }
-            }
-            return false;
-        });
-        return foundPlayer ? "Pokemon Attack send successfully" : "Pokemon or Attack not valid.";
+    public ResponseDTO iniciarBatalla(){
+        ResponseDTO attackResponseFromServer = new ResponseDTO();
+        try {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL + "/api/gimnasio/iniciar"))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println(response.body());
+            setResponseDto(response, attackResponseFromServer);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return attackResponseFromServer;
+    }
+    public ResponseDTO unirseAGimnasio(PlayerInformation pokemonFromFile){
+        ResponseDTO responseFromServer = new ResponseDTO();
+        try {
+            HttpRequest.BodyPublisher requestBodyPublisher = HttpRequest.BodyPublishers.ofString(
+                    objectMapper.writeValueAsString(pokemonFromFile));
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL + "/api/gimnasio/unirse"))
+                    .header("Content-Type", "application/json")
+                    .POST(requestBodyPublisher)
+                    .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println(response.body());
+            setResponseDto(response, responseFromServer);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return responseFromServer;
     }
 
-    public BatallaResponse obtenerBatallaInformation() {
-        BatallaResponse batallaResponseFromServer = new BatallaResponse();
+    public ResponseDTO atacarPokemon(String sourcePlayerName, String targetPlayerName, int attackId){
+        ResponseDTO attackResponseFromServer = new ResponseDTO();
+        AttackInformationDTO attackInformationDTO = new AttackInformationDTO();
+        attackInformationDTO.setAttackId(attackId);
+        attackInformationDTO.setSourcePlayerName(sourcePlayerName);
+        attackInformationDTO.setTargetPlayerName(targetPlayerName);
+        try {
+            HttpRequest.BodyPublisher requestBodyPublisher = HttpRequest.BodyPublishers.ofString(
+                    objectMapper.writeValueAsString(attackInformationDTO));
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(BASE_URL + "/api/gimnasio/atacar"))
+                    .header("Content-Type", "application/json")
+                    .POST(requestBodyPublisher)
+                    .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println(response.body());
+            setResponseDto(response, attackResponseFromServer);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        return attackResponseFromServer;
+    }
+
+    public ResponseDTO obtenerBatallaInformation() {
+        ResponseDTO batallaResponseFromServer = new ResponseDTO();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/api/gimnasioPokemon/obtener-informacion-batalla"))
+                .uri(URI.create(BASE_URL + "/api/gimnasio/info"))
                 .GET()
                 .build();
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println(response.body());
-            batallaResponseFromServer = objectMapper.readValue(response.body(), new TypeReference<>() {});
+            if(response.statusCode() == 400){
+                batallaResponseFromServer.setSuccess(false);
+                batallaResponseFromServer = objectMapper.readValue(response.body(), new TypeReference<>() {});
+            } else {
+                BatallaResponse batallaFromServer = objectMapper.readValue(response.body(), new TypeReference<>() {});
+                batallaResponseFromServer.setSuccess(true);
+                batallaResponseFromServer.setMessage(batallaFromServer);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return batallaResponseFromServer;
+    }
+
+    private void setResponseDto(HttpResponse<String> response, ResponseDTO responseFromServer) throws JsonProcessingException {
+        if(response.statusCode() == 400){
+            responseFromServer.setSuccess(false);
+            responseFromServer.setMessage(objectMapper.readValue(response.body(), new TypeReference<>() {}));
+        } else {
+            responseFromServer.setSuccess(true);
+            responseFromServer.setMessage(objectMapper.readValue(response.body(), new TypeReference<>() {}));
+        }
     }
 }

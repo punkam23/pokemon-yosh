@@ -17,8 +17,8 @@ public class Pokemon {
     @JsonProperty("type")
     PokemonTypeEnum type;
 
-    @JsonProperty("vida")
-    int vida;
+    @JsonProperty("life")
+    double life;
 
     @JsonProperty("attacks")
     List<Attack> attacks;

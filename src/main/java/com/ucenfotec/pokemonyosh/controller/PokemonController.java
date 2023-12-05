@@ -1,5 +1,6 @@
 package com.ucenfotec.pokemonyosh.controller;
 
+import com.ucenfotec.pokemonyosh.DTO.ResponseDTO;
 import com.ucenfotec.pokemonyosh.model.AttackInformation;
 import com.ucenfotec.pokemonyosh.model.BatallaResponse;
 import com.ucenfotec.pokemonyosh.model.PlayerInformation;
@@ -8,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController()
 @RequestMapping("/api/pokemon")
 public class PokemonController {
@@ -15,27 +19,48 @@ public class PokemonController {
     @Autowired
     public PokemonService pokemonService;
 
-    @PostMapping("/iniciar")
-    public ResponseEntity<String> iniciarPokemon(@RequestBody PlayerInformation playerInformation) {
-        String mensaje = pokemonService.iniciarPokemon(playerInformation);
-        return ResponseEntity.ok(mensaje);
+    @PostMapping("/iniciar-pokemon")
+    public ResponseEntity<ResponseDTO> iniciarPokemon(@RequestBody PlayerInformation playerInformation) {
+        ResponseDTO mensaje = pokemonService.iniciarPokemon(playerInformation);
+        return getResponseEntity(mensaje);
     }
 
     @PostMapping("/unirse-batalla")
-    public ResponseEntity<String> unirseBatalla() {
-        String mensaje = pokemonService.unirseBatalla();
-        return ResponseEntity.ok(mensaje);
+    public ResponseEntity<ResponseDTO> unirseBatalla() {
+        ResponseDTO mensaje = pokemonService.unirseBatalla();
+        return getResponseEntity(mensaje);
     }
 
-    @PostMapping("/atacar")
-    public ResponseEntity<String> unirseBatalla(@RequestBody AttackInformation attackInformation) {
-        String attackResponse = pokemonService.atacarPokemon(attackInformation);
-        return ResponseEntity.ok(attackResponse);
+    @PostMapping("/iniciar-batalla")
+    public ResponseEntity<ResponseDTO> iniciarBatalla() {
+        ResponseDTO mensaje = pokemonService.iniciarBatalla();
+        return getResponseEntity(mensaje);
     }
 
-    @GetMapping("/obtener-estado-batalla")
-    public ResponseEntity<BatallaResponse> obtenerEstadoBatalla() {
-        BatallaResponse batallaResponse = pokemonService.obtenerInformacionBatalla();
-        return ResponseEntity.ok(batallaResponse);
+    @PostMapping("/atacar-pokemon")
+    public ResponseEntity<ResponseDTO> unirseBatalla(@RequestBody AttackInformation attackInformation) {
+        ResponseDTO attackResponse = pokemonService.atacarPokemon(attackInformation);
+        return getResponseEntity(attackResponse);
+    }
+
+    @GetMapping("/obtener-informacion-batalla")
+    public ResponseEntity<ResponseDTO> obtenerEstadoBatalla() {
+        ResponseDTO batallaResponse = pokemonService.obtenerInformacionBatalla();
+        return getResponseEntity(batallaResponse);
+    }
+
+    private ResponseEntity<Object> createResponse(String message) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", message);
+        response.put("success", true);
+        return ResponseEntity.ok(response);
+    }
+
+    private static ResponseEntity<ResponseDTO> getResponseEntity(ResponseDTO mensaje) {
+        if(mensaje.isSuccess()){
+            return ResponseEntity.ok(mensaje);
+        }else {
+            return ResponseEntity.badRequest().body(mensaje);
+        }
     }
 }

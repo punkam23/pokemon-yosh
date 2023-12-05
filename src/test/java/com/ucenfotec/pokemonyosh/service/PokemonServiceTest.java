@@ -1,5 +1,6 @@
 package com.ucenfotec.pokemonyosh.service;
 
+import com.ucenfotec.pokemonyosh.DTO.ResponseDTO;
 import com.ucenfotec.pokemonyosh.model.Attack;
 import com.ucenfotec.pokemonyosh.model.PlayerInformation;
 import com.ucenfotec.pokemonyosh.model.Pokemon;
@@ -30,18 +31,18 @@ public class PokemonServiceTest {
         //given
         Attack attack1 = new Attack();
         attack1.setPower(100);
-        attack1.setType(PokemonTypeEnum.NORMAL);
+        attack1.setType(PokemonTypeEnum.normal);
 
         Attack attack2 = new Attack();
         attack1.setPower(75);
-        attack1.setType(PokemonTypeEnum.NORMAL);
+        attack1.setType(PokemonTypeEnum.normal);
 
         Attack attack3 = new Attack();
         attack1.setPower(50);
-        attack1.setType(PokemonTypeEnum.NORMAL);
+        attack1.setType(PokemonTypeEnum.normal);
         Pokemon pokemon = new Pokemon(
                 "pokemonName",
-                PokemonTypeEnum.NORMAL,
+                PokemonTypeEnum.normal,
                 1000,
                 List.of(attack1, attack2, attack3)
         );
@@ -52,10 +53,10 @@ public class PokemonServiceTest {
         );
 
         //when
-        String response = this.pokemonService.iniciarPokemon(playerInformation);
+        ResponseDTO response = this.pokemonService.iniciarPokemon(playerInformation);
 
         //then
-        String expectedResponse = "El jugador ha sido registrado para la batalla";
+        ResponseDTO expectedResponse = new ResponseDTO(true, "El jugador ha sido registrado para la batalla");
         assertNotNull(response);
         assertEquals(expectedResponse, response);
 
