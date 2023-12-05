@@ -1,10 +1,7 @@
 package com.ucenfotec.pokemonyosh.service;
 
 import com.ucenfotec.pokemonyosh.DTO.ResponseDTO;
-import com.ucenfotec.pokemonyosh.model.Attack;
-import com.ucenfotec.pokemonyosh.model.PlayerInformation;
-import com.ucenfotec.pokemonyosh.model.Pokemon;
-import com.ucenfotec.pokemonyosh.model.PokemonTypeEnum;
+import com.ucenfotec.pokemonyosh.model.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,16 +44,14 @@ public class PokemonServiceTest {
                 List.of(attack1, attack2, attack3)
         );
 
-        PlayerInformation playerInformation = new PlayerInformation(
-                "playerName",
-                pokemon
-        );
-
+        PlayerInformation playerInformation = new PlayerInformation();
+        playerInformation.setPlayerName("playerName");
+        playerInformation.setPokemon(pokemon);
         //when
         ResponseDTO response = this.pokemonService.iniciarPokemon(playerInformation);
 
         //then
-        ResponseDTO expectedResponse = new ResponseDTO(true, "El jugador ha sido registrado para la batalla");
+        ResponseDTO expectedResponse = new ResponseDTO(true, "The player has been added or modified.");
         assertNotNull(response);
         assertEquals(expectedResponse, response);
 

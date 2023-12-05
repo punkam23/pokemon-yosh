@@ -1,10 +1,9 @@
 package com.ucenfotec.pokemonyosh.integration;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ucenfotec.pokemonyosh.model.Attack;
-import com.ucenfotec.pokemonyosh.model.PlayerInformation;
-import com.ucenfotec.pokemonyosh.model.Pokemon;
-import com.ucenfotec.pokemonyosh.model.PokemonTypeEnum;
+import com.ucenfotec.pokemonyosh.DTO.ResponseDTO;
+import com.ucenfotec.pokemonyosh.model.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,26 +46,25 @@ public class PokemonIntegrationTest {
         //given
         Attack attack1 = new Attack();
         attack1.setPower(100);
-        attack1.setType(PokemonTypeEnum.NORMAL);
+        attack1.setType(PokemonTypeEnum.normal);
 
         Attack attack2 = new Attack();
         attack1.setPower(75);
-        attack1.setType(PokemonTypeEnum.NORMAL);
+        attack1.setType(PokemonTypeEnum.normal);
 
         Attack attack3 = new Attack();
         attack1.setPower(50);
-        attack1.setType(PokemonTypeEnum.NORMAL);
+        attack1.setType(PokemonTypeEnum.normal);
         Pokemon pokemon = new Pokemon(
                 "pokemonName",
-                PokemonTypeEnum.NORMAL,
+                PokemonTypeEnum.normal,
                 1000,
                 List.of(attack1, attack2, attack3)
         );
 
-        PlayerInformation playerInformation = new PlayerInformation(
-                "playerName",
-                pokemon
-        );
+        PlayerInformation playerInformation = new PlayerInformation();
+        playerInformation.setPlayerName("playerName");
+        playerInformation.setPokemon(pokemon);
 
         //when
 
@@ -74,17 +72,19 @@ public class PokemonIntegrationTest {
                 objectMapper.writeValueAsString(playerInformation));
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/api/pokemon/iniciar"))
+                .uri(URI.create(BASE_URL + "/api/pokemon/iniciar-pokemon"))
                 .header("Content-Type", "application/json")
                 .POST(requestBodyPublisher)
                 .build();
 
         // Send the request and get the response
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-
+        ResponseDTO responseFromServer = new ResponseDTO();
+        responseFromServer.setSuccess(false);
+        responseFromServer.setMessage(objectMapper.readValue(response.body(), new TypeReference<>() {}));
         // then
         assertEquals(200, response.statusCode());
-        assertEquals("El jugador ha sido registrado para la batalla", response.body());
+        assertEquals(objectMapper.writeValueAsString(responseFromServer.getMessage()), response.body());
 
     }
 }
