@@ -1,4 +1,4 @@
-package com.ucenfotec.pokemonyosh.integration;
+package com.ucenfotec.pokemonyosh.component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,7 +7,6 @@ import com.ucenfotec.pokemonyosh.model.*;
 import com.ucenfotec.pokemonyosh.service.GimnasioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,7 +27,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-public class PokemonIntegrationTest {
+public class PokemonComponentTest {
 
     @Autowired
     private ObjectMapper objectMapper;
