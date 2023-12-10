@@ -2,8 +2,11 @@ package com.ucenfotec.pokemonyosh.DTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 public class AttackInformationDTO {
     @JsonProperty("attackId")
     Integer attackId;

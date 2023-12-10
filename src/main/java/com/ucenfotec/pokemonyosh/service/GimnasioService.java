@@ -18,23 +18,14 @@ import java.util.List;
 @Service
 public class GimnasioService {
 
-    private final HttpClient httpClient;
+    private final HttpClient httpClient = HttpClient.newBuilder().build();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final String BASE_URL = "http://ec2-3-18-23-121.us-east-2.compute.amazonaws.com:8080"; // Replace with your actual base URL
 
-
-    public GimnasioService(){
-        this.httpClient = HttpClient.newBuilder().build();
+    public HttpClient getHttpClient() {
+        return this.httpClient;
     }
-    private Pokemon pokemonPlayer1 = new Pokemon("bulbasor", PokemonTypeEnum.normal,1000, List.of());
-    private PlayerInformation player1 = new PlayerInformation("player1", PlayerStateEnum.EN_BATALLA.name(), pokemonPlayer1);
-    private Pokemon pokemonPlayer2 = new Pokemon("bulbasor2", PokemonTypeEnum.normal,1000, List.of());
-    private PlayerInformation player2 = new PlayerInformation("player2", PlayerStateEnum.EN_BATALLA.name(), pokemonPlayer1);
-    private Pokemon pokemonPlayer3 = new Pokemon("bulbasor3", PokemonTypeEnum.normal,1000, List.of());
-    private PlayerInformation player3 = new PlayerInformation("player3", PlayerStateEnum.ATACANDO.name(), pokemonPlayer1);
-    private BatallaResponse batallaResponse = new BatallaResponse(1L, "EN_BATALLA",
-            List.of(player1, player2, player3));
 
     public ResponseDTO iniciarBatalla(){
         ResponseDTO attackResponseFromServer = new ResponseDTO();
@@ -44,7 +35,7 @@ public class GimnasioService {
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.noBody())
                     .build();
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println(response.body());
             setResponseDto(response, attackResponseFromServer);
         } catch (Exception e) {
@@ -63,7 +54,7 @@ public class GimnasioService {
                     .header("Content-Type", "application/json")
                     .POST(requestBodyPublisher)
                     .build();
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println(response.body());
             setResponseDto(response, responseFromServer);
         } catch (Exception e) {
@@ -87,7 +78,7 @@ public class GimnasioService {
                     .header("Content-Type", "application/json")
                     .POST(requestBodyPublisher)
                     .build();
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println(response.body());
             setResponseDto(response, attackResponseFromServer);
         } catch (Exception e) {
@@ -104,7 +95,7 @@ public class GimnasioService {
                 .GET()
                 .build();
         try {
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println(response.body());
             if(response.statusCode() == 400){
                 batallaResponseFromServer.setSuccess(false);

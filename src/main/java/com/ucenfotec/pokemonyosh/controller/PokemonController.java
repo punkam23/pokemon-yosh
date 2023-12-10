@@ -16,8 +16,13 @@ import java.util.Map;
 @RequestMapping("/api/pokemon")
 public class PokemonController {
 
-    @Autowired
+
     public PokemonService pokemonService;
+
+    @Autowired
+    public PokemonController(PokemonService pokemonService) {
+        this.pokemonService = pokemonService;
+    }
 
     @PostMapping("/iniciar-pokemon")
     public ResponseEntity<ResponseDTO> iniciarPokemon(@RequestBody PlayerInformation playerInformation) {
@@ -38,7 +43,7 @@ public class PokemonController {
     }
 
     @PostMapping("/atacar-pokemon")
-    public ResponseEntity<ResponseDTO> unirseBatalla(@RequestBody AttackInformation attackInformation) {
+    public ResponseEntity<ResponseDTO> atacarPokemon(@RequestBody AttackInformation attackInformation) {
         ResponseDTO attackResponse = pokemonService.atacarPokemon(attackInformation);
         return getResponseEntity(attackResponse);
     }
@@ -47,13 +52,6 @@ public class PokemonController {
     public ResponseEntity<ResponseDTO> obtenerEstadoBatalla() {
         ResponseDTO batallaResponse = pokemonService.obtenerInformacionBatalla();
         return getResponseEntity(batallaResponse);
-    }
-
-    private ResponseEntity<Object> createResponse(String message) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", message);
-        response.put("success", true);
-        return ResponseEntity.ok(response);
     }
 
     private static ResponseEntity<ResponseDTO> getResponseEntity(ResponseDTO mensaje) {

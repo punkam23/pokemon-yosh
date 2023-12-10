@@ -3,10 +3,7 @@ package com.ucenfotec.pokemonyosh.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ucenfotec.pokemonyosh.DTO.ResponseDTO;
 import com.ucenfotec.pokemonyosh.model.AttackInformation;
-import com.ucenfotec.pokemonyosh.model.BatallaResponse;
 import com.ucenfotec.pokemonyosh.model.PlayerInformation;
-import com.ucenfotec.pokemonyosh.model.Pokemon;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,19 +17,28 @@ import java.nio.file.StandardOpenOption;
 @Service
 public class PokemonService {
 
-    @Autowired
     public GimnasioService gimnasioService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     @Value("${app.player-information.file}")
     private String playerInformationFilePath;
+
+    @Autowired
+    public PokemonService(GimnasioService gimnasioService, ObjectMapper objectMapper){
+        this.gimnasioService = gimnasioService;
+        this.objectMapper = new ObjectMapper();
+    }
+
+    public String getPlayerInformationFilePath(){
+        return this.playerInformationFilePath;
+    }
 
     public ResponseDTO iniciarPokemon(PlayerInformation playerInformation) {
         ResponseDTO response = new ResponseDTO();
         try {
             if(!this.gimnasioService.obtenerBatallaInformation().isSuccess()){
-                Path outputFilePath = Path.of(playerInformationFilePath);
+                Path outputFilePath = Path.of(getPlayerInformationFilePath());
                 String objectJson = objectMapper.writeValueAsString(playerInformation);
                 Files.write(outputFilePath, objectJson.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                 response.setSuccess(true);
@@ -52,9 +58,9 @@ public class PokemonService {
 
     public ResponseDTO unirseBatalla() {
         try {
-            PlayerInformation pokemonFromFile = objectMapper.readValue(new File(playerInformationFilePath), PlayerInformation.class);
+            PlayerInformation pokemonFromFile = objectMapper.readValue(new File(getPlayerInformationFilePath()), PlayerInformation.class);
             return this.gimnasioService.unirseAGimnasio(pokemonFromFile);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
         }
@@ -63,8 +69,8 @@ public class PokemonService {
     public ResponseDTO atacarPokemon(AttackInformation attackInformation) {
         PlayerInformation playerInformation;
         try {
-            playerInformation = objectMapper.readValue(new File(playerInformationFilePath), PlayerInformation.class);
-        } catch (IOException e) {
+            playerInformation = objectMapper.readValue(new File(getPlayerInformationFilePath()), PlayerInformation.class);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return this.gimnasioService.atacarPokemon(playerInformation.getPlayerName(), attackInformation.getPlayerName(), attackInformation.getAttackId());
