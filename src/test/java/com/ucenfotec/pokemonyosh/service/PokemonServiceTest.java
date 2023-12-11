@@ -66,7 +66,11 @@ public class PokemonServiceTest {
         playerInformation.setPlayerName("playerName");
         playerInformation.setPokemon(pokemon);
 
-        when(gimnasioService.obtenerBatallaInformation()).thenReturn(new ResponseDTO(true, "Battle information"));
+        BatallaResponse failBattleResponse = this.batallaResponse;
+        failBattleResponse.setState(BattleStateEnum.EN_BATALLA.name());
+
+        when(gimnasioService.obtenerBatallaInformation()).thenReturn(new ResponseDTO(true,
+                failBattleResponse));
 
         //when
         ResponseDTO response = this.pokemonService.iniciarPokemon(playerInformation);
