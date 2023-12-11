@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PokemonController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pokemonYosh</a> &gt; <a href="index.source.html" class="el_package">com.ucenfotec.pokemonyosh.controller</a> &gt; <span class="el_source">PokemonController.java</span></div><h1>PokemonController.java</h1><pre class="source lang-java linenums">package com.ucenfotec.pokemonyosh.controller;
+
+import com.ucenfotec.pokemonyosh.DTO.ResponseDTO;
+import com.ucenfotec.pokemonyosh.model.AttackInformation;
+import com.ucenfotec.pokemonyosh.model.BatallaResponse;
+import com.ucenfotec.pokemonyosh.model.PlayerInformation;
+import com.ucenfotec.pokemonyosh.service.PokemonService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@RestController()
+@RequestMapping(&quot;/api/pokemon&quot;)
+public class PokemonController {
+
+
+    public PokemonService pokemonService;
+
+    @Autowired
+<span class="fc" id="L23">    public PokemonController(PokemonService pokemonService) {</span>
+<span class="fc" id="L24">        this.pokemonService = pokemonService;</span>
+<span class="fc" id="L25">    }</span>
+
+    @PostMapping(&quot;/iniciar-pokemon&quot;)
+    public ResponseEntity&lt;ResponseDTO&gt; iniciarPokemon(@RequestBody PlayerInformation playerInformation) {
+<span class="fc" id="L29">        ResponseDTO mensaje = pokemonService.iniciarPokemon(playerInformation);</span>
+<span class="fc" id="L30">        return getResponseEntity(mensaje);</span>
+    }
+
+    @PostMapping(&quot;/unirse-batalla&quot;)
+    public ResponseEntity&lt;ResponseDTO&gt; unirseBatalla() {
+<span class="fc" id="L35">        ResponseDTO mensaje = pokemonService.unirseBatalla();</span>
+<span class="fc" id="L36">        return getResponseEntity(mensaje);</span>
+    }
+
+    @PostMapping(&quot;/iniciar-batalla&quot;)
+    public ResponseEntity&lt;ResponseDTO&gt; iniciarBatalla() {
+<span class="fc" id="L41">        ResponseDTO mensaje = pokemonService.iniciarBatalla();</span>
+<span class="fc" id="L42">        return getResponseEntity(mensaje);</span>
+    }
+
+    @PostMapping(&quot;/atacar-pokemon&quot;)
+    public ResponseEntity&lt;ResponseDTO&gt; atacarPokemon(@RequestBody AttackInformation attackInformation) {
+<span class="fc" id="L47">        ResponseDTO attackResponse = pokemonService.atacarPokemon(attackInformation);</span>
+<span class="fc" id="L48">        return getResponseEntity(attackResponse);</span>
+    }
+
+    @GetMapping(&quot;/obtener-informacion-batalla&quot;)
+    public ResponseEntity&lt;ResponseDTO&gt; obtenerEstadoBatalla() {
+<span class="fc" id="L53">        ResponseDTO batallaResponse = pokemonService.obtenerInformacionBatalla();</span>
+<span class="fc" id="L54">        return getResponseEntity(batallaResponse);</span>
+    }
+
+    private static ResponseEntity&lt;ResponseDTO&gt; getResponseEntity(ResponseDTO mensaje) {
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if(mensaje.isSuccess()){</span>
+<span class="fc" id="L59">            return ResponseEntity.ok(mensaje);</span>
+        }else {
+<span class="nc" id="L61">            return ResponseEntity.badRequest().body(mensaje);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
