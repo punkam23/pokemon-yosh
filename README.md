@@ -5,4 +5,4 @@ Este es el pokemon del jugador que sera parte de una batalla del gimnasio
 
 Coverage
 
-![Coverage](https://github.com/punkam23/gimnasio/blob/gh-pages/badges/jacoco.svg)
+![Coverage](https://github.com/punkam23/pokemon-yosh/blob/gh-pages/badges/jacoco.svg)
