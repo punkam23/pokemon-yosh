@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GimnasioService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">pokemonYosh</a> &gt; <a href="index.source.html" class="el_package">com.ucenfotec.pokemonyosh.service</a> &gt; <span class="el_source">GimnasioService.java</span></div><h1>GimnasioService.java</h1><pre class="source lang-java linenums">package com.ucenfotec.pokemonyosh.service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ucenfotec.pokemonyosh.DTO.AttackInformationDTO;
+import com.ucenfotec.pokemonyosh.DTO.ResponseDTO;
+import com.ucenfotec.pokemonyosh.model.*;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.stereotype.Service;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.List;
+
+@Service
+<span class="fc" id="L19">public class GimnasioService {</span>
+
+<span class="fc" id="L21">    private final HttpClient httpClient = HttpClient.newBuilder().build();</span>
+<span class="fc" id="L22">    private final ObjectMapper objectMapper = new ObjectMapper();</span>
+
+    private static final String BASE_URL = &quot;http://ec2-3-18-23-121.us-east-2.compute.amazonaws.com:8080&quot;; // Replace with your actual base URL
+
+    public HttpClient getHttpClient() {
+<span class="fc" id="L27">        return this.httpClient;</span>
+    }
+
+    public ResponseDTO iniciarBatalla(){
+<span class="fc" id="L31">        ResponseDTO attackResponseFromServer = new ResponseDTO();</span>
+        try {
+<span class="fc" id="L33">            HttpRequest request = HttpRequest.newBuilder()</span>
+<span class="fc" id="L34">                    .uri(URI.create(BASE_URL + &quot;/api/gimnasio/iniciar&quot;))</span>
+<span class="fc" id="L35">                    .header(&quot;Content-Type&quot;, &quot;application/json&quot;)</span>
+<span class="fc" id="L36">                    .POST(HttpRequest.BodyPublishers.noBody())</span>
+<span class="fc" id="L37">                    .build();</span>
+<span class="fc" id="L38">            HttpResponse&lt;String&gt; response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());</span>
+<span class="fc" id="L39">            System.out.println(response.body());</span>
+<span class="fc" id="L40">            setResponseDto(response, attackResponseFromServer);</span>
+<span class="fc" id="L41">        } catch (Exception e) {</span>
+<span class="fc" id="L42">            e.printStackTrace();</span>
+<span class="fc" id="L43">            throw new RuntimeException(e);</span>
+<span class="fc" id="L44">        }</span>
+<span class="fc" id="L45">        return attackResponseFromServer;</span>
+    }
+    public ResponseDTO unirseAGimnasio(PlayerInformation pokemonFromFile){
+<span class="fc" id="L48">        ResponseDTO responseFromServer = new ResponseDTO();</span>
+        try {
+<span class="fc" id="L50">            HttpRequest.BodyPublisher requestBodyPublisher = HttpRequest.BodyPublishers.ofString(</span>
+<span class="fc" id="L51">                    objectMapper.writeValueAsString(pokemonFromFile));</span>
+<span class="fc" id="L52">            HttpRequest request = HttpRequest.newBuilder()</span>
+<span class="fc" id="L53">                    .uri(URI.create(BASE_URL + &quot;/api/gimnasio/unirse&quot;))</span>
+<span class="fc" id="L54">                    .header(&quot;Content-Type&quot;, &quot;application/json&quot;)</span>
+<span class="fc" id="L55">                    .POST(requestBodyPublisher)</span>
+<span class="fc" id="L56">                    .build();</span>
+<span class="fc" id="L57">            HttpResponse&lt;String&gt; response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());</span>
+<span class="fc" id="L58">            System.out.println(response.body());</span>
+<span class="fc" id="L59">            setResponseDto(response, responseFromServer);</span>
+<span class="fc" id="L60">        } catch (Exception e) {</span>
+<span class="fc" id="L61">            e.printStackTrace();</span>
+<span class="fc" id="L62">            throw new RuntimeException(e);</span>
+<span class="fc" id="L63">        }</span>
+<span class="fc" id="L64">        return responseFromServer;</span>
+    }
+
+    public ResponseDTO atacarPokemon(String sourcePlayerName, String targetPlayerName, int attackId){
+<span class="fc" id="L68">        ResponseDTO attackResponseFromServer = new ResponseDTO();</span>
+<span class="fc" id="L69">        AttackInformationDTO attackInformationDTO = new AttackInformationDTO();</span>
+<span class="fc" id="L70">        attackInformationDTO.setAttackId(attackId);</span>
+<span class="fc" id="L71">        attackInformationDTO.setSourcePlayerName(sourcePlayerName);</span>
+<span class="fc" id="L72">        attackInformationDTO.setTargetPlayerName(targetPlayerName);</span>
+        try {
+<span class="fc" id="L74">            HttpRequest.BodyPublisher requestBodyPublisher = HttpRequest.BodyPublishers.ofString(</span>
+<span class="fc" id="L75">                    objectMapper.writeValueAsString(attackInformationDTO));</span>
+<span class="fc" id="L76">            HttpRequest request = HttpRequest.newBuilder()</span>
+<span class="fc" id="L77">                    .uri(URI.create(BASE_URL + &quot;/api/gimnasio/atacar&quot;))</span>
+<span class="fc" id="L78">                    .header(&quot;Content-Type&quot;, &quot;application/json&quot;)</span>
+<span class="fc" id="L79">                    .POST(requestBodyPublisher)</span>
+<span class="fc" id="L80">                    .build();</span>
+<span class="fc" id="L81">            HttpResponse&lt;String&gt; response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());</span>
+<span class="fc" id="L82">            System.out.println(response.body());</span>
+<span class="fc" id="L83">            setResponseDto(response, attackResponseFromServer);</span>
+<span class="fc" id="L84">        } catch (Exception e) {</span>
+<span class="fc" id="L85">            e.printStackTrace();</span>
+<span class="fc" id="L86">            throw new RuntimeException(e);</span>
+<span class="fc" id="L87">        }</span>
+<span class="fc" id="L88">        return attackResponseFromServer;</span>
+    }
+
+    public ResponseDTO obtenerBatallaInformation() {
+<span class="fc" id="L92">        ResponseDTO batallaResponseFromServer = new ResponseDTO();</span>
+<span class="fc" id="L93">        HttpRequest request = HttpRequest.newBuilder()</span>
+<span class="fc" id="L94">                .uri(URI.create(BASE_URL + &quot;/api/gimnasio/info&quot;))</span>
+<span class="fc" id="L95">                .GET()</span>
+<span class="fc" id="L96">                .build();</span>
+        try {
+<span class="fc" id="L98">            HttpResponse&lt;String&gt; response = getHttpClient().send(request, HttpResponse.BodyHandlers.ofString());</span>
+<span class="fc" id="L99">            System.out.println(response.body());</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">            if(response.statusCode() == 400){</span>
+<span class="fc" id="L101">                batallaResponseFromServer.setSuccess(false);</span>
+<span class="fc" id="L102">                batallaResponseFromServer = objectMapper.readValue(response.body(), new TypeReference&lt;&gt;() {});</span>
+            } else {
+<span class="fc" id="L104">                BatallaResponse batallaFromServer = objectMapper.readValue(response.body(), new TypeReference&lt;&gt;() {});</span>
+<span class="fc" id="L105">                batallaResponseFromServer.setSuccess(true);</span>
+<span class="fc" id="L106">                batallaResponseFromServer.setMessage(batallaFromServer);</span>
+            }
+
+<span class="fc" id="L109">        } catch (Exception e) {</span>
+<span class="fc" id="L110">            e.printStackTrace();</span>
+<span class="fc" id="L111">            throw new RuntimeException(e);</span>
+<span class="fc" id="L112">        }</span>
+<span class="fc" id="L113">        return batallaResponseFromServer;</span>
+    }
+
+    private void setResponseDto(HttpResponse&lt;String&gt; response, ResponseDTO responseFromServer) throws JsonProcessingException {
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">        if(response.statusCode() == 400){</span>
+<span class="nc" id="L118">            responseFromServer.setSuccess(false);</span>
+<span class="nc" id="L119">            responseFromServer.setMessage(objectMapper.readValue(response.body(), new TypeReference&lt;&gt;() {}));</span>
+        } else {
+<span class="fc" id="L121">            responseFromServer.setSuccess(true);</span>
+<span class="fc" id="L122">            responseFromServer.setMessage(objectMapper.readValue(response.body(), new TypeReference&lt;&gt;() {}));</span>
+        }
+<span class="fc" id="L124">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
