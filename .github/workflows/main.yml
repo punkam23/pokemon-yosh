@@ -28,6 +28,17 @@ jobs:
           name: jacoco-results
           path: build/reports/jacoco/test
 
+      - name: Copy JaCoCo Reports to Docs
+        run: |
+          mkdir -p docs/jacoco
+          cp -r ${{ github.workspace }}/build/reports/jacoco/test/* docs/jacoco      
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs
+
       - name: Create SSH directory
         run: mkdir -p $HOME/.ssh
 
