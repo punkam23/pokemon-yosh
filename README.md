@@ -9,3 +9,5 @@ Este es el pokemon del jugador que sera parte de una batalla del gimnasio
 Check out the JaCoCo code coverage reports:
 
 - [Overall Coverage](https://github.com/punkam23/pokemon-yosh/blob/gh-pages/jacoco/html/index.html)
+
+<iframe src="https://github.com/punkam23/pokemon-yosh/blob/gh-pages/jacoco/html/index.html" width="100%" height="300px"></iframe>
