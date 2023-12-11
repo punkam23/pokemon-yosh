@@ -10,4 +10,7 @@ Check out the JaCoCo code coverage reports:
 
 - [Overall Coverage](https://github.com/punkam23/pokemon-yosh/blob/gh-pages/jacoco/html/index.html)
 
-<iframe src="https://github.com/punkam23/pokemon-yosh/blob/gh-pages/jacoco/html/index.html" width="100%" height="300px"></iframe>
+[Link to HTML](https://github.com/punkam23/pokemon-yosh/blob/gh-pages/jacoco/html/index.html)
+
+
+![Coverage](.github/badges/jacoco.svg)

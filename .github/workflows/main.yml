@@ -28,16 +28,22 @@ jobs:
           name: jacoco-results
           path: build/reports/jacoco/test
 
-      - name: Copy JaCoCo Reports to Docs
-        run: |
-          mkdir -p docs/jacoco
-          cp -r ${{ github.workspace }}/build/reports/jacoco/test/* docs/jacoco      
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Generate JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2
         with:
-          github_token: ${{ secrets.PAT_TOKEN }}
-          publish_dir: docs
+          generate-branches-badge: true
+          jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
+#
+#      - name: Copy JaCoCo Reports to Docs
+#        run: |
+#          mkdir -p docs/jacoco
+#          cp -r ${{ github.workspace }}/build/reports/jacoco/test/* docs/jacoco
+#
+#      - name: Deploy to GitHub Pages
+#        uses: peaceiris/actions-gh-pages@v3
+#        with:
+#          github_token: ${{ secrets.PAT_TOKEN }}
+#          publish_dir: docs
 
       - name: Create SSH directory
         run: mkdir -p $HOME/.ssh
