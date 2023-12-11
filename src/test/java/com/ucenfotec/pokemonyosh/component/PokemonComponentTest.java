@@ -126,4 +126,30 @@ public class PokemonComponentTest {
         assertEquals(objectMapper.writeValueAsString(responseFromServer.getMessage()), response.body());
 
     }
+
+    @Test
+    public void shouldFailWhenInitiatePlayerInformationWhitBadRequestObjectTest() throws Exception {
+        //given
+
+        PlayerInformation playerInformation = new PlayerInformation();
+
+        //when
+
+        HttpRequest.BodyPublisher requestBodyPublisher = HttpRequest.BodyPublishers.ofString(
+                objectMapper.writeValueAsString(playerInformation));
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/api/pokemon/iniciar-pokemon"))
+                .header("Content-Type", "application/json")
+                .POST(requestBodyPublisher)
+                .build();
+
+        // Send the request and get the response
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        ResponseDTO responseFromServer = new ResponseDTO();
+        responseFromServer.setSuccess(false);
+        responseFromServer.setMessage(objectMapper.readValue(response.body(), new TypeReference<>() {}));
+        // then
+        assertEquals(400, response.statusCode());
+    }
 }

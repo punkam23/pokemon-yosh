@@ -5,6 +5,7 @@ import com.ucenfotec.pokemonyosh.model.AttackInformation;
 import com.ucenfotec.pokemonyosh.model.BatallaResponse;
 import com.ucenfotec.pokemonyosh.model.PlayerInformation;
 import com.ucenfotec.pokemonyosh.service.PokemonService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class PokemonController {
     }
 
     @PostMapping("/iniciar-pokemon")
-    public ResponseEntity<ResponseDTO> iniciarPokemon(@RequestBody PlayerInformation playerInformation) {
+    public ResponseEntity<ResponseDTO> iniciarPokemon(@Valid @RequestBody PlayerInformation playerInformation) {
         ResponseDTO mensaje = pokemonService.iniciarPokemon(playerInformation);
         return getResponseEntity(mensaje);
     }
@@ -43,7 +44,7 @@ public class PokemonController {
     }
 
     @PostMapping("/atacar-pokemon")
-    public ResponseEntity<ResponseDTO> atacarPokemon(@RequestBody AttackInformation attackInformation) {
+    public ResponseEntity<ResponseDTO> atacarPokemon(@Valid @RequestBody AttackInformation attackInformation) {
         ResponseDTO attackResponse = pokemonService.atacarPokemon(attackInformation);
         return getResponseEntity(attackResponse);
     }
